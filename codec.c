@@ -38,14 +38,15 @@ void fill_Table(struct Table *table_ptr, const int array[], struct Huff_Node *no
 void treeTraverse(struct Huff_Node *startNode, int array[], int i);
 unsigned int getCode(int current, int *length);
 
-int main (int argc, char *argv[]){
-    int i = 0, j = 0, k = 0, z = 0, x = 0;
-    int freq = 0;
-    long int fsize = 0;
-    unsigned long int freq_array[256][2], temp[1][2];
-    unsigned char *file_data;
-    FILE *inputfpt, *outputfpt;
-    struct Huff_Tree *huff_heap;
+int main (int argc, char *argv[])
+{
+	int i = 0, j = 0, k = 0, z = 0, x = 0;
+	int freq = 0;
+	long int fsize = 0;
+	unsigned long int freq_array[256][2], temp[1][2];
+	unsigned char *file_data;
+	FILE *inputfpt, *outputfpt;
+	struct Huff_Tree *huff_heap;
 	FILE *dest;
 	int a,b,c;
 	unsigned int index;
@@ -78,20 +79,20 @@ int main (int argc, char *argv[]){
 		switch(index)
 		{
 			case 'o':
-						mode1 = 1;
-						out = strdup(optarg);
-						break;
+					mode1 = 1;
+					out = strdup(optarg);
+					break;
 						
 			case 'c': 
-						mode = 1;		//compress
-						fptr = strdup(optarg);
-						printf("Compressing: %s\n", fptr);
-						break;
+					mode = 1;		//compress
+					fptr = strdup(optarg);
+					printf("Compressing: %s\n", fptr);
+					break;
 			
 			case 'd':
-						mode = 2;		//decompress
-						fptr = strdup(optarg);
-						printf("Decompressing: %s\n", fptr);
+					mode = 2;		//decompress
+					fptr = strdup(optarg);
+					printf("Decompressing: %s\n", fptr);
 		}
 	}	
 	
@@ -127,20 +128,23 @@ int main (int argc, char *argv[]){
 		strcat(fptr,hoff);
 		printf("Compressed File: %s\n", fptr);
 
-
     	fseek(inputfpt,0L,SEEK_END);
     	fsize = ftell(inputfpt);
     	rewind(inputfpt);
-
     	file_data = (unsigned char *)calloc(fsize, sizeof(unsigned char));
     	fread(file_data, 1, fsize, inputfpt);
 
-    	while(i < fsize){
-    	    if(val_check(freq_array,k,file_data[i]) == 0){
+    	while(i < fsize)
+	{
+    	    if(val_check(freq_array,k,file_data[i]) == 0)
+	    {
     	        i = i + 1;
-    	    }else{
-    	        for(j = 0; j < fsize; j++){
-    	            if(file_data[j] == file_data[i]){
+    	    }else
+	    {
+    	        for(j = 0; j < fsize; j++)
+		{
+    	            if(file_data[j] == file_data[i])
+		    {
     	                freq = freq + 1;
     	            }
     	        }
@@ -152,10 +156,14 @@ int main (int argc, char *argv[]){
     	        freq = 0;
     	    }
     	}
+		
     	// Sort freqs
-    	for(z = 0; z < k; z++){
-    	    for(x = 0; x < k; x++){
-    	        if(freq_array[x][1] > freq_array[z][1]){
+    	for(z = 0; z < k; z++)
+	{
+    	    for(x = 0; x < k; x++)
+	    {
+    	        if(freq_array[x][1] > freq_array[z][1])
+		{
     	            temp[0][0] = freq_array[x][0];
     	            temp[0][1] = freq_array[x][1];
     	            freq_array[x][0] = freq_array[z][0];
@@ -177,7 +185,7 @@ int main (int argc, char *argv[]){
     	// build tree
     	huff_heap = build_tree(freq_array,k);
     	
-		// build table
+	// build table
     	create_Table(huff_heap, k);
 		
 		//write output
@@ -240,7 +248,8 @@ int main (int argc, char *argv[]){
 		}
 
         fsize = fgetc(outputfpt);
-        for(i = 0; i < (fsize * 2); i++){
+        for(i = 0; i < (fsize * 2); i++)
+	{
             freq_array[i][0] = fgetc(outputfpt);
             fread(&freq_array[i][1],1,5,outputfpt);
         }
@@ -306,7 +315,7 @@ int main (int argc, char *argv[]){
 		fclose(inputfpt);   //.hoff
 		fclose(outputfpt);  //output.txt
 
-	}else					//improper use case
+	}else		//improper use case
 	{	
 		printf("Improper Use!\n");
 		printf("Compress   Format: ./[executable] -c [filename] -o [keyFile]\n");
@@ -323,15 +332,18 @@ int main (int argc, char *argv[]){
 
 void treeTraverse(struct Huff_Node *startNode, int array[], int i)
 {	
-    if(startNode->right != NULL){
+    if(startNode->right != NULL)
+    {
         array[i] = 1;
         inTraverse(startNode->right, array, i + 1);
     }
-    if(startNode->left == NULL && startNode->right == NULL){
+    if(startNode->left == NULL && startNode->right == NULL)
+    {
         fill_Table(table, array, startNode, table_idx, i);
         table_idx = table_idx + 1;
     }
-    if(startNode->left != NULL){
+    if(startNode->left != NULL)
+    {
         array[i] = 0;
         inTraverse(startNode->left, array, i + 1);
     }
@@ -365,14 +377,16 @@ unsigned int getCode(int current, int *length)
 	return code;
 }
 
-struct Huff_Tree *Huff_init(int num_nodes){
+struct Huff_Tree *Huff_init(int num_nodes)
+{
     struct Huff_Tree *huff_ptr = (struct Huff_Tree *)calloc(num_nodes, sizeof(struct Huff_Tree));
     huff_ptr->size = num_nodes;
     huff_ptr->array = (struct Huff_Node **)calloc(num_nodes, sizeof(struct Huff_Node *));
     return(huff_ptr);
 }
 
-struct Huff_Node *create_Node(unsigned int data, unsigned int num_pres){
+struct Huff_Node *create_Node(unsigned int data, unsigned int num_pres)
+{
     struct Huff_Node* huff_temp = (struct Huff_Node *)calloc(1, sizeof(struct Huff_Node));
     huff_temp->left = NULL;
     huff_temp->right = NULL;
@@ -381,11 +395,13 @@ struct Huff_Node *create_Node(unsigned int data, unsigned int num_pres){
     return(huff_temp);
 }
 
-struct Huff_Tree *build_tree(unsigned long int freqs[256][2], int size){
+struct Huff_Tree *build_tree(unsigned long int freqs[256][2], int size)
+{
     struct Huff_Node *min_nodeA, *min_nodeB;
     struct Huff_Tree *huff_ptr = Huff_init(size);
     huff_ptr = fill_heap(huff_ptr,freqs,size);
-    while(huff_ptr->size > 1) {
+    while(huff_ptr->size > 1) 
+    {
         min_nodeA = find_min(huff_ptr);
         min_nodeB = find_min(huff_ptr);
         huff_ptr = buildAndInsertNode(huff_ptr,min_nodeA,min_nodeB);
@@ -393,30 +409,35 @@ struct Huff_Tree *build_tree(unsigned long int freqs[256][2], int size){
     return(huff_ptr);
 }
 
-struct Huff_Node *find_min(struct Huff_Tree *huff_ptr){
+struct Huff_Node *find_min(struct Huff_Tree *huff_ptr)
+{
     struct Huff_Node *min = huff_ptr->array[0];
     remove_freq(huff_ptr);
     return(min);
 }
 
-void remove_freq(struct Huff_Tree *huff_ptr){
-    for(int i = 1; i < huff_ptr->size; i++){
+void remove_freq(struct Huff_Tree *huff_ptr)
+{
+    for(int i = 1; i < huff_ptr->size; i++)
+    {
         huff_ptr->array[i - 1] = huff_ptr->array[i];
     }
     huff_ptr->size--;
 }
 
-struct Huff_Tree *fill_heap(struct Huff_Tree *huff_ptr, unsigned long int freq[256][2], int size){
+struct Huff_Tree *fill_heap(struct Huff_Tree *huff_ptr, unsigned long int freq[256][2], int size)
+{
     int i = 0;
-    while(i < size){
+    while(i < size)
+    {
         huff_ptr->array[i] = create_Node(freq[i][0], freq[i][1]);
         i++;
     }
     return(huff_ptr);
 }
 
-struct Huff_Tree *buildAndInsertNode(struct Huff_Tree *huff_ptr,
-                                     struct Huff_Node *Node1, struct Huff_Node *Node2){
+struct Huff_Tree *buildAndInsertNode(struct Huff_Tree *huff_ptr, struct Huff_Node *Node1, struct Huff_Node *Node2)
+{
     struct Huff_Node *top_Node = create_Node('$',Node1->num_pres + Node2->num_pres);
     int i = 0, x = 0, loc = -1;
 
@@ -424,18 +445,25 @@ struct Huff_Tree *buildAndInsertNode(struct Huff_Tree *huff_ptr,
     top_Node->left = Node1;
     top_Node->right = Node2;
     // Insert Node
-    if(huff_ptr->size == 1) {
+    if(huff_ptr->size == 1) 
+    {
         huff_ptr->array[0] = top_Node;
-    }else {
-        for (i = 0; i < huff_ptr->size - 1; i++) {
-            if (top_Node->num_pres >= huff_ptr->array[i]->num_pres) {
+    }else 
+    {
+        for (i = 0; i < huff_ptr->size - 1; i++) 
+	{
+            if (top_Node->num_pres >= huff_ptr->array[i]->num_pres) 
+	    {
                 loc = i;
             }
         }
-        for (x = huff_ptr->size - 1; x >= loc + 1; x--) {
-            if (x == loc + 1) {
+        for (x = huff_ptr->size - 1; x >= loc + 1; x--) 
+	{
+            if (x == loc + 1) 
+	    {
                 huff_ptr->array[x] = top_Node;
-            } else {
+            } else 
+	    {
                 huff_ptr->array[x] = huff_ptr->array[x - 1];
             }
         }
@@ -443,16 +471,20 @@ struct Huff_Tree *buildAndInsertNode(struct Huff_Tree *huff_ptr,
     return(huff_ptr);
 }
 
-int val_check(unsigned long int freq[256][2], int size, unsigned char val){
-    for(int i = 0; i < size; i++){
-        if(freq[i][0] == val){
+int val_check(unsigned long int freq[256][2], int size, unsigned char val)
+{
+    for(int i = 0; i < size; i++)
+    {
+        if(freq[i][0] == val)
+	{
             return(0);
         }
     }
     return(1);
 }
 
-void create_Table(struct Huff_Tree *huff_ptr, int size){
+void create_Table(struct Huff_Tree *huff_ptr, int size)
+{
     table = (struct Table *)calloc(size, sizeof(struct Table));
     int array[size];
     struct Huff_Node *start = huff_ptr->array[0];
@@ -460,26 +492,32 @@ void create_Table(struct Huff_Tree *huff_ptr, int size){
     inTraverse(start,array,0);
 }
 
-void inTraverse(struct Huff_Node *startNode, int array[], int i){
-    if(startNode->right != NULL){
+void inTraverse(struct Huff_Node *startNode, int array[], int i)
+{
+    if(startNode->right != NULL)
+    {
         array[i] = 1;
         inTraverse(startNode->right, array, i + 1);
     }
-    if(startNode->left == NULL && startNode->right == NULL){
+    if(startNode->left == NULL && startNode->right == NULL)
+    {
         fill_Table(table, array, startNode, table_idx, i);
         table_idx = table_idx + 1;
     }
-    if(startNode->left != NULL){
+    if(startNode->left != NULL)
+    {
         array[i] = 0;
         inTraverse(startNode->left, array, i + 1);
     }
 }
 
-void fill_Table(struct Table *table_ptr, const int array[], struct Huff_Node *node, int j, int i){
+void fill_Table(struct Table *table_ptr, const int array[], struct Huff_Node *node, int j, int i)
+{
     table_ptr[j].data = node->data;
     table_ptr[j].len = i;
     table_ptr[j].code = (int *)calloc(i, sizeof(int));
-    for(int x = 0; x < i; x++){
+    for(int x = 0; x < i; x++)
+    {
         table_ptr[j].code[x] = array[x];
     }
 }
